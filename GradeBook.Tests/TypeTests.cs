@@ -21,6 +21,47 @@ namespace GradeBook.Tests
         }
 
         [Fact]
+        public void StringsBehaveLikeValueTypes()
+        {
+            // arrange
+            string name = "Scott";
+
+            // act
+            name = MakeUpperCase(name);
+
+            // assert
+            Assert.Equal("SCOTT", name);
+        }
+
+        private string MakeUpperCase(string parameter)
+        {
+            return parameter.ToUpper();
+        }
+
+        [Fact]
+        public void Test1()
+        {
+            // arrange
+            var x = GetInt();
+
+            // act
+            SetInt(ref x);
+
+            // assert
+            Assert.Equal(42, x);
+        }
+
+        private void SetInt(ref int x)
+        {
+            x = 42;
+        }
+
+        private int GetInt()
+        {
+            return 3;
+        }
+
+        [Fact]
         public void TwoVariablesCanReferenceSameObject()
         {
             // arrange
@@ -36,7 +77,43 @@ namespace GradeBook.Tests
         }
 
         [Fact]
-        public void Test1()
+        public void CSharpCanPassByRef()
+        {
+            // arrange
+            var book1 = GetBook("Book 1");
+
+            // act
+            GetBookSetName(ref book1, "New Name");
+
+            // assert
+            Assert.Equal("New Name", book1.Name);
+        }
+        // out instead of ref, out assumes variable uninitialized and requires it be
+        private void GetBookSetName(ref Book book, string name)
+        {
+            book = new Book(name);
+        }
+
+        [Fact]
+        public void CSharpIsPassByValue()
+        {
+            // arrange
+            var book1 = GetBook("Book 1");
+
+            // act
+            GetBookSetName(book1, "New Name");
+
+            // assert
+            Assert.Equal("Book 1", book1.Name);
+        }
+
+        private void GetBookSetName(Book book, string name)
+        {
+            book = new Book(name);
+        }
+
+        [Fact]
+        public void CanSetNameFromReference()
         {
             // arrange
             var book1 = GetBook("Book 1");
@@ -45,7 +122,21 @@ namespace GradeBook.Tests
             SetName(book1, "New Name");
 
             // assert
-            Assert.Equal("Book 1", book1.Name);
+            Assert.Equal("New Name", book1.Name);
+        }
+
+        [Fact]
+        public void GetStatisticsCalculatesLetterGrade()
+        {
+            // arrange
+            var book = GetBook("book1");
+            book.AddGrade(76.1);
+
+            // act
+            var result = book.GetStatistics();
+
+            // assert
+            Assert.Equal('A', result.Letter);
         }
 
         private void SetName(Book book, string name)

@@ -6,16 +6,49 @@ namespace GradeBook
     {
         static void Main(string[] args)
         {
-            var book = new Book("Mr Tom");
+            var book = new Book("Gradebook");
 
-            //book.AddGrade(89.1);
-            //book.AddGrade(72.5);
-            //book.AddGrade(92.2);
-            //book.AddGrade(88.1);
+            book.WriteLog("fish and grits");
+
+            book.GradeAdded += OnGradeAdded;
+
+            book.Name = "";
+
+            Console.WriteLine(book.Name);
+
+            while (true)
+            {
+                var input = Console.ReadLine();
+
+                if (input == "q") break;
+
+                try
+                {
+                    book.AddGrade(double.Parse(input));
+                }
+                catch(ArgumentException ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                catch(FormatException ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                finally
+                {
+                    // code runs everytime
+                }
+            }
 
             var stats = book.GetStatistics();
 
-            Console.WriteLine($"Average grade is {stats.Average}.  Low grade is {stats.Low}.  High grade is {stats.High}");
+            Console.WriteLine($"Average grade is {stats.Average}.  Low grade is {stats.Low}.  High grade is {stats.High}. " +
+                $"Letter grade is {stats.Letter}");
+        }
+
+        private static void OnGradeAdded(object sender, EventArgs args)
+        {
+            Console.WriteLine("OnGradeAdded called");
         }
     }
 }
