@@ -3,6 +3,15 @@ using System.Collections.Generic;
 
 namespace GradeBook
 {
+    // EVENTS
+
+        public delegate void GradeAddedDelegate(object sender, EventArgs args);
+
+        // public event GradeAddedDelegate GradeAdded;  found in InMemoryBook
+
+        // see implementation in AddGrade function and program.cs
+
+    // end
     public class NamedObject
     {
         public NamedObject(string name)
@@ -11,8 +20,35 @@ namespace GradeBook
         }
         public string Name { get; set; }
     }
-    public class Book : NamedObject
+    // Polymorphism example
+
+    public interface IBook  // defines capabilities of a book
     {
+        void AddGrade(double grade);
+        Statistics GetStatistics();
+        string Name { get; }
+        event GradeAddedDelegate GradeAdded;
+    }
+    public abstract class Book : NamedObject, IBook
+    {
+        public Book(string name) : base(name)
+        {
+        }
+
+        // public virtual event GradeAddedDelegate GradeAdded;  // virtual allows class inheriting Book to override this
+        public abstract event GradeAddedDelegate GradeAdded;
+
+        public abstract void AddGrade(double grade);
+
+        //public virtual Statistics GetStatistics()  // virtual allows class inheriting Book to override this
+        //{
+        //    throw new NotImplementedException();
+        //}
+        public abstract Statistics GetStatistics();
+    }
+    public class InMemoryBook : Book, IBook
+    {
+        public override event GradeAddedDelegate GradeAdded;  // override allows this book implementation to differ from the base class
         private List<double> grades;
 
         readonly string test; // read only means var only initialized in constructor and can't be changed
@@ -20,12 +56,12 @@ namespace GradeBook
          const string CONSTANT = "constant";  // can never be changed, treated as static
 
 
-        public Book(string name) : base(name)
+        public InMemoryBook(string name) : base(name)
         {
             grades = new List<double>();
         }
 
-        public void AddGrade(double grade)
+        public override void AddGrade(double grade)
         {
             if (grade <= 100 && grade >= 0)
             {
@@ -38,40 +74,46 @@ namespace GradeBook
                 throw new ArgumentException($"Invalid {nameof(grade)}");
         }
 
-        public Statistics GetStatistics()
+        public override Statistics GetStatistics()  // override allows this book implementation to change the behavior of this method from that in the base class
         {
             var result = new Statistics();
 
-            result.High = double.MinValue;
-            result.Low = double.MaxValue;
-
             foreach (var grade in grades)
             {
-                result.High = Math.Max(grade, result.High);
-                result.Low = Math.Min(grade, result.Low);
-                result.Average += grade;
-            };
-
-            result.Average /= grades.Count;
-
-            switch (result.Average)
-            {
-                case var d when d >= 90.0:
-                    result.Letter = 'A';
-                    break;
-                case var d when d >= 80.0:
-                    result.Letter = 'B';
-                    break;
-                case var d when d >= 70.0:
-                    result.Letter = 'C';
-                    break;
-                case var d when d >= 60.0:
-                    result.Letter = 'D';
-                    break;
-                default:
-                    result.Letter = 'F';
-                    break;
+                result.Add(grade);
             }
+
+            // -----  ALL MOVED TO STATISTICS CLASS / MODEL
+            //result.High = double.MinValue;
+            //result.Low = double.MaxValue;
+
+            //foreach (var grade in grades)
+            //{
+            //    result.High = Math.Max(grade, result.High);
+            //    result.Low = Math.Min(grade, result.Low);
+            //    result.Average += grade;
+            //};
+
+            //result.Average /= grades.Count;
+
+            //switch (result.Average)
+            //{
+            //    case var d when d >= 90.0:
+            //        result.Letter = 'A';
+            //        break;
+            //    case var d when d >= 80.0:
+            //        result.Letter = 'B';
+            //        break;
+            //    case var d when d >= 70.0:
+            //        result.Letter = 'C';
+            //        break;
+            //    case var d when d >= 60.0:
+            //        result.Letter = 'D';
+            //        break;
+            //    default:
+            //        result.Letter = 'F';
+            //        break;
+            //}
 
             return result;
         }
@@ -127,15 +169,6 @@ namespace GradeBook
                 return "";
             }
 
-            // EVENTS
-
-                public delegate void GradeAddedDelegate(object sender, EventArgs args);
-
-                public event GradeAddedDelegate GradeAdded;
-
-                // see implementation in AddGrade function and program.cs
-
-            // end
 
         // end
 
