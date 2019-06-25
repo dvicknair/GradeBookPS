@@ -130,7 +130,7 @@ namespace GradeBook.Tests
         {
             // arrange
             var book = GetBook("book1");
-            book.AddGrade(76.1);
+            book.AddGrade(96.1);
 
             // act
             var result = book.GetStatistics();
