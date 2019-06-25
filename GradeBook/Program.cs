@@ -52,7 +52,7 @@ namespace GradeBook
 
         private static void OnGradeAdded(object sender, EventArgs args)
         {
-            Console.WriteLine("OnGradeAdded called");
+            Console.WriteLine("Grade Added");
         }
     }
 }

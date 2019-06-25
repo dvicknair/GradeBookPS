@@ -6,13 +6,12 @@ namespace GradeBook
     internal class DiskBook : Book
     {
         private string name;
+        public override event GradeAddedDelegate GradeAdded;
 
         public DiskBook(string name) : base(name)
         {
             this.name = name;
         }
-
-        public override event GradeAddedDelegate GradeAdded;
 
         public override void AddGrade(double grade)
         {
